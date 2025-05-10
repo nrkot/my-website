@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        #question {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        #maze-container {
+            position: relative;
+            border: 3px solid white;
+            background-color: black;
+        }
+
+        canvas {
+            background-color: white;
+            max-width: 90vw;
+            max-height: 60vh;
+        }
+
+        #message {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            font-size: 20px;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        #gif-fullscreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 10;
+        }
+        @media (max-width: 768px) {
+            #container {
+                flex-direction: column;
+            }
+            #question {
+                font-size: 20px;
+            }
+            canvas {
+                width: 90vw;
+                height: auto;
+            }
+            #message {
+                font-size: 18px;
+                max-width: 90vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="question">пройди лабиринт</div>
+    <div id="container">
+        <div id="maze-container">
+            <canvas id="maze"></canvas>
+        </div>
+        <div id="message">
+            <p>ураа</p>
+            <div class="tenor-gif-embed" data-postid="15706347" data-share-method="host" data-aspect-ratio="0.59375" data-width="100%">
+                <a href="https://tenor.com/view/helpy-fnaf-dance-five-nights-at-freddys-gif-15706347">Helpy Fnaf GIF</a>
+            </div>
+            <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+        </div>
+    </div>
+    <div id="gif-fullscreen">
+        <div class="tenor-gif-embed" data-postid="20893284" data-share-method="host" data-aspect-ratio="1.33333" data-width="100%">
+            <a href="https://tenor.com/view/deepfriedwoomy-gif-20893284">Deepfriedwoomy GIF</a>
+        </div>
+        <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+    </div>
+
+    <script>
+        const mazeCanvas = document.getElementById('maze');
+        const ctx = mazeCanvas.getContext('2d');
+        const gifFullscreen = document.getElementById('gif-fullscreen');
+        const message = document.getElementById('message');
+        let playerPos = { x: 0, y: 0 };
+        const mazeSize = 10;
+        const cellSize = 50;
+        mazeCanvas.width = mazeSize * cellSize;
+        mazeCanvas.height = mazeSize * cellSize;
+
+        const maze = [
+            [0, 1, 0, 1, 0, 1, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 1, 0, 1, 1, 0],
+            [0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+            [1, 1, 0, 1, 0, 1, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 1, 1, 0, 1, 0],
+            [0, 1, 1, 0, 1, 0, 0, 0, 1, 0],
+            [0, 1, 0, 0, 1, 0, 1, 0, 0, 0],
+            [1, 0, 0, 1, 0, 1, 0, 0, 1, 0],
+            [0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 1, 0, 0, 0]
+        ];
+
+        function drawMaze() {
+            ctx.clearRect(0, 0, mazeCanvas.width, mazeCanvas.height);
+            for (let row = 0; row < mazeSize; row++) {
+                for (let col = 0; col < mazeSize; col++) {
+                    ctx.fillStyle = maze[row][col] === 1 ? 'black' : 'white';
+                    ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+                    ctx.strokeStyle = 'red';
+                    ctx.strokeRect(col * cellSize, row * cellSize, cellSize, cellSize);
+                }
+            }
+            ctx.fillStyle = 'red';
+            ctx.fillRect((mazeSize - 1) * cellSize, (mazeSize - 1) * cellSize, cellSize, cellSize);
+            ctx.fillStyle = 'green';
+            ctx.fillRect((mazeSize - 2) * cellSize, (mazeSize - 2) * cellSize, cellSize, cellSize);
+            ctx.fillStyle = 'pink';
+            ctx.fillRect(playerPos.x * cellSize, playerPos.y * cellSize, cellSize, cellSize);
+        }
+
+        document.addEventListener('keydown', movePlayer);
+
+        let touchStartX, touchStartY;
+        document.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                movePlayer({ key: diffX > 0 ? 'ArrowRight' : 'ArrowLeft' });
+            } else {
+                movePlayer({ key: diffY > 0 ? 'ArrowDown' : 'ArrowUp' });
+            }
+        });
+
+        function movePlayer(event) {
+            let { x, y } = playerPos;
+            if (event.key === 'ArrowUp' && y > 0 && maze[y - 1][x] === 0) y--;
+            if (event.key === 'ArrowDown' && y < mazeSize - 1 && maze[y + 1][x] === 0) y++;
+            if (event.key === 'ArrowLeft' && x > 0 && maze[y][x - 1] === 0) x--;
+            if (event.key === 'ArrowRight' && x < mazeSize - 1 && maze[y][x + 1] === 0) x++;
+            playerPos = { x, y };
+            drawMaze();
+            checkFinish();
+        }
+
+        function checkFinish() {
+            if (playerPos.x === 9 && playerPos.y === 9) gifFullscreen.style.display = 'block';
+            if (playerPos.x === 8 && playerPos.y === 8) {
+                message.style.display = 'block';
+                message.style.opacity = '1';
+            }
+        }
+
+        drawMaze();
+    </script>
+</body>
+</html>

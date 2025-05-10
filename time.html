@@ -1,0 +1,90 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>сколько времени прошло</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+            background-image: url('https://hiddekelito.wordpress.com/wp-content/uploads/2015/07/latest.gif');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            color: white; 
+        }
+        h1{
+            color: white ;
+            border: 1px solid white;
+        }
+        p{
+            margin: 20px;
+            font-size: 30px;
+        }
+        #timer{
+            display: inline;
+            border: 2px solid rgb(255, 255, 255);
+            font-size: 50px;
+            font-weight: bold;
+            color: white;
+        }
+        @media (max-width: 600px) {
+        #timer {
+            font-size: 30px;
+        }
+        p {
+            font-size: 20px;
+        }
+    }
+    </style>
+</head>
+<body>
+    <h1>сколько времени прошло с нашего знакомства</h1>
+    <p>сейчас время: <span id="time"></span></p>
+    <div id="timer">Загрузка...</div>
+    <script>
+        setInterval(function(){
+            var date = new Date();
+            var day = date.getDate();
+            var month = date.getMonth();
+            var year = date.getFullYear();
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var seconds = date.getSeconds();
+            var time = year + '/' + month + '/' + day + '-' + hours + ':' + minutes + ':' + seconds ;
+            document.getElementById('time').innerHTML = time;
+        },1000);
+        const startDate = new Date("2022-11-22T00:00:00");
+
+        
+
+function updateTimer() {
+  const now = new Date();
+  let diff = now - startDate;
+
+  const seconds = Math.floor(diff / 1000) % 60;
+  const minutes = Math.floor(diff / (1000 * 60)) % 60;
+  const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
+  const daysTotal = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  
+  const years = Math.floor(daysTotal / 365);
+  const months = Math.floor((daysTotal % 365) / 30);
+  const days = (daysTotal % 365) % 30;
+
+  document.getElementById("timer").textContent =
+    `${years} года, ${months} мес., ${days} дн., ${hours} ч., ${minutes} мин., ${seconds} сек.`;
+}
+
+updateTimer();
+setInterval(updateTimer, 1000);
+</script>
+
+    </script>
+</body>
+</html>

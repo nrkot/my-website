@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>.</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .gift-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+      background: #000000;
+  }
+
+  .gift-box {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 20px;
+    cursor: pointer;
+    animation: bounce 2s infinite;
+  }
+
+  .lid {
+    background: #35004e;
+    width: 120px;
+    height: 30px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .box {
+    background: #6f30b6;
+    width: 120px;
+    height: 90px;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    border-radius: 0 0 8px 8px;
+  }
+
+  .tap-text {
+    margin-top: 140px;
+    font-size: 16px;
+    color: #6d1bd8;
+    font-weight: bold;
+  }
+
+  .message {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #444;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+}
+    .nav {
+      padding: 20px;
+      background-color: #131313;
+      border-bottom: 2px solid #4f0988;
+      box-shadow: 0 8px 30px rgba(134, 39, 207, 0.6);
+      text-align: center;
+    }
+    .nav a {
+      color: white;
+      margin: 0 10px;
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: 0.4s;
+    }
+    .nav a:hover {
+      border-bottom: 2px solid #5200bd;
+      color: #5200bd;
+    }
+
+    .intro-overlay {
+      position: fixed;
+      inset: 0;
+      background: #121212;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      text-align: center;
+      padding: 20px;
+    }
+    .intro-text-container {
+      max-width: 600px;
+    }
+    .intro-line {
+      opacity: 0;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    .line2 {
+      font-size: 1rem;
+      color: #aaa;
+      cursor: pointer;
+    }
+    .line5:hover {
+      color: #fff;
+    }
+
+    #compliment-section {
+      margin: 40px 10px;
+      text-align: center;
+    }
+
+    #compliment-text {
+      font-size: 1.3rem;
+      margin-top: 10px;
+      min-height: 30px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      background: #5200bd;
+      color: white;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #draggable-cat {
+      width: 80px;
+      height: 80px;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      cursor: grab;
+      z-index: 9999;
+      border-radius: 15px;
+    }
+
+    #catch-the-cat {
+      margin: 60px 10px;
+      text-align: center;
+    }
+
+    #cat-game-container {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      height: 300px;
+      margin: auto;
+      background: #000000;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    #running-cat {
+      width: 70px;
+      height: 70px;
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      cursor: pointer;
+    }
+
+    #win-message {
+      font-size: 1.5rem;
+      color: green;
+      display: none;
+      margin-top: 20px;
+    }
+
+    #win-gif {
+      display: none;
+      margin-top: 20px;
+      width: 120px;
+    }
+
+    @media (max-width: 600px) {
+      .nav a {
+        display: block;
+        margin: 10px 0;
+      }
+
+      .intro-line {
+        font-size: 1rem;
+      }
+
+      #compliment-text {
+        font-size: 1.1rem;
+      }
+
+      button {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+      }
+
+  
+    #cat-game-container {
+      height: 240px;
+    }
+
+    #running-cat {
+      width: 70px;
+      height: 70px;
+    }
+
+    #win-message {
+      font-size: 1.2rem;
+    }
+
+    #win-gif {
+      width: 100px;
+    }
+  }
+
+  </style>
+</head>
+<body>
+
+<div class="intro-overlay">
+  <div class="intro-text-container">
+    <p class="intro-line line1">эт сайт я создавал чтобы подарить его вместе с кофтой</p>
+    <p class="intro-line line2">↳ нажми </p>
+    <p class="intro-line line3"></p>
+    <p class="intro-line line4"></p>
+    <p class="intro-line line5"></p>
+  </div>
+</div>
+
+<header class="nav">
+  <a href="c:\Users\Пользователь\Desktop\web site for my gf\why.html">100 причин</a>
+  <a href="c:\Users\Пользователь\Desktop\web site for my gf\time.html">таймер</a>
+  <a href="c:\Users\Пользователь\Desktop\web site for my gf\openwhen.html">открой когда..</a>
+</header>
+
+<section class="gift-section" id="gift">
+  <div class="gift-box" onclick="openGift()">
+    <div class="lid"></div>
+    <div class="box"></div>
+    <p class="tap-text">Нажми на меня </p>
+  </div>
+  <div class="message hidden" id="giftMessage">
+    <p>надеюсь сайт тебе понравится :)</p>
+  </div>
+</section>
+
+<img src="https://i.pinimg.com/originals/20/67/65/20676527bc584f82177d749c59cfdc70.gif"
+     alt="Cute Cat" id="draggable-cat" />
+
+
+
+<script>
+const lines = document.querySelectorAll(".intro-line");
+gsap.to(lines[0], { opacity: 1, duration: 1.2, delay: 0.5 });
+gsap.to(lines[1], { opacity: 1, duration: 1.2, delay: 1.5 });
+gsap.to(lines[2], { opacity: 1, duration: 0, delay: 0 });
+gsap.to(lines[3], { opacity: 1, duration: 0, delay: 0});
+gsap.to(lines[4], { opacity: 0.7, duration: 1, delay: 6.5 });
+
+lines[1].addEventListener("click", () => {
+  gsap.to(".intro-overlay", {
+    opacity: 0,
+    duration: 1,
+    onComplete: () => document.querySelector(".intro-overlay").remove()
+  });
+});
+
+const compliments = [
+  "ты самаая самая",
+  "С тобой даже молчать интересно",
+  "Ты как Wi-Fi: если тебя рядом нет, всё работает хуже",
+  "С тобой мне не нужен кофе ты уже заряд бодрости и сладости",
+  "Ты — как редкая катсцена в FNaF: редкость, которая радует больше всего",
+  "Я бы даже остался в офисе всю ночь, если бы ты была рядом",
+  "ты как спавн пойнт в паркурах"
+  
+];
+
+function showCompliment() {
+  const text = document.getElementById("compliment-text");
+  const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+  gsap.fromTo(text, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.8, onStart: () => text.textContent = compliment });
+}
+
+Draggable.create("#draggable-cat", {
+  bounds: window,
+  inertia: true,
+  onPress() {
+    this.target.style.cursor = "grabbing";
+  },
+  onRelease() {
+    this.target.style.cursor = "grab";
+  }
+});
+
+let tapCount = 0;
+const message = document.getElementById("giftMessage");
+
+function openGift() {
+  tapCount++;
+  if (tapCount >= 5) {
+    document.querySelector(".gift-box").style.display = "none";
+    message.classList.remove("hidden");
+  }
+}
+</script>
+
+</body>
+</html>
